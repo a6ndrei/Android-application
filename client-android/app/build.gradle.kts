@@ -42,11 +42,10 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // --- Dependențe necesare pentru Retrofit (Rețea) ---
-    // Retrofit (Client HTTP)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-
-    // Converter pentru JSON (Gson)
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("com.google.android.material:material:1.10.0")
+    implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 }
