@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.example.myapplication.api.RetrofitClient;
 import com.example.myapplication.models.LoginRequest;
 import com.example.myapplication.models.LoginResponse;
 import com.example.myapplication.utils.TokenManager;
+import com.example.myapplication.TaskActivity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,16 +43,16 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
 
+        RetrofitClient.initialize(this);
         authService = RetrofitClient.getAuthService();
         tokenManager = new TokenManager(this);
 
 
         if (tokenManager.getToken() != null) {
 
-            // TODO: Implementați o funcție care navighează la TaskActivity
+
             Log.d(TAG, "Token existent. Navigare la Task Screen.");
-            // finish();
-            // return;
+
         }
 
 
@@ -93,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Login Reușit!", Toast.LENGTH_LONG).show();
                     Log.i(TAG, "Token salvat: " + token);
 
-                    // TODO: Navighează la ecranul principal de Task-uri
+                    Intent intent = new Intent(MainActivity.this, TaskActivity.class);
+                    startActivity(intent);
+                    finish();
+
                 } else {
 
                     Toast.makeText(MainActivity.this, "Login Eșuat. Verifică credențialele.", Toast.LENGTH_LONG).show();
@@ -125,11 +130,24 @@ public class MainActivity extends AppCompatActivity {
         authService.register(registerRequest).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(MainActivity.this, "Înregistrare Reușită! Acum vă puteți Loga.", Toast.LENGTH_LONG).show();
+                if (response.isSuccessful() && response.body() != null) {
+
+                    String token = response.body().getToken();
+
+
+                    tokenManager.saveToken(token);
+
+                    Toast.makeText(MainActivity.this, "Login Reusit!", Toast.LENGTH_LONG).show();
+
+
+                    Intent intent = new Intent(MainActivity.this, TaskActivity.class);
+                    startActivity(intent);
+
+
+                    finish();
                 } else {
-                    // Cazul 2: Înregistrare eșuată (ex: 400 Bad Request - utilizator existent)
-                    Toast.makeText(MainActivity.this, "Înregistrare Eșuată. " + response.message(), Toast.LENGTH_LONG).show();
+
+                    Toast.makeText(MainActivity.this, "Login Esuat. Verifica credentialele.", Toast.LENGTH_LONG).show();
                 }
             }
 
